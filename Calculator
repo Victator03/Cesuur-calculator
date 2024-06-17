@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Score Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Final Score Calculator</h2>
+    <form id="scoreCalculator">
+        <label for="rawScore">Enter the raw score (number of correct answers):</label>
+        <input type="number" id="rawScore" required>
+        <label for="passingThreshold">Enter the passing threshold (cut-off score):</label>
+        <input type="number" id="passingThreshold" required>
+        <label for="totalQuestions">Enter the total number of questions (maximum score):</label>
+        <input type="number" id="totalQuestions" required>
+        <label for="totalPoints">Enter the total points these questions are worth:</label>
+        <input type="number" id="totalPoints" required>
+        <button type="button" onclick="calculateFinalScore()">Calculate Final Score</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function calculateFinalScore() {
+            const rawScore = parseFloat(document.getElementById('rawScore').value);
+            const passingThreshold = parseFloat(document.getElementById('passingThreshold').value);
+            const totalQuestions = parseFloat(document.getElementById('totalQuestions').value);
+            const totalPoints = parseFloat(document.getElementById('totalPoints').value);
+
+            if (rawScore < 0 || passingThreshold < 0 || totalQuestions <= 0 || totalPoints <= 0) {
+                alert("Scores, the number of questions, and total points must be non-negative, and the number of questions and total points must be positive.");
+                return;
+            }
+
+            if (passingThreshold >= totalQuestions) {
+                alert("The passing threshold must be less than the total number of questions.");
+                return;
+            }
+
+            const z = (totalPoints / 2) + ((totalPoints / 2) / (totalQuestions - passingThreshold)) * (rawScore - passingThreshold);
+            const finalScore = z.toFixed(2);
+
+            let table = '<table><tr><th>Raw Score</th><th>Final Score</th><th>Result</th></tr>';
+            for (let i = 0; i <= totalQuestions; i++) {
+                const score = (totalPoints / 2) + ((totalPoints / 2) / (totalQuestions - passingThreshold)) * (i - passingThreshold);
+                const roundedScore = Math.max(score, 0).toFixed(2);
+                const result = i >= passingThreshold ? "Pass" : "Fail";
+                table += `<tr><td>${i}</td><td>${roundedScore}</td><td>${result}</td></tr>`;
+            }
+            table += '</table>';
+
+            document.getElementById('result').innerHTML = `<p>The final score is: ${finalScore}</p>` + table;
+        }
+    </script>
+</body>
+</html>
